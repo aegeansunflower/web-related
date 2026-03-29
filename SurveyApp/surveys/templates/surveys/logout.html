@@ -1,0 +1,14 @@
+{% extends 'surveys/base.html' %}
+{% block title %}Log Out - AnCat{% endblock %}
+{% block content %}
+<div class="form-container"
+    style="max-width: 400px; margin: 0 auto; background: var(--bg-card); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-sm); text-align: center; animation: fadeIn 0.5s ease-out;">
+    <h2 style="margin-bottom: 1.5rem;">Are you sure you want to log out?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Yes, Log Out</button>
+        <a href="{% url 'survey_list' %}" class="btn btn-secondary"
+            style="margin-top: 1rem; margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

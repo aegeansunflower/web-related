@@ -1,0 +1,163 @@
+{% extends 'surveys/base.html' %}
+{% block title %}Anket Oluştur - AnCat{% endblock %}
+{% block content %}
+<style>
+    .create-card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        animation: slideUp 0.5s ease;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+        background: var(--bg-main);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 1rem;
+        color: var(--text-color);
+        outline: none;
+        transition: all 0.2s;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary);
+    }
+
+    .toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 2.5rem;
+        background: rgba(26, 115, 232, 0.05);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--border-color);
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(22px);
+    }
+</style>
+
+<div class="create-card">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Yeni Anket Oluştur</h2>
+        {% if is_admin %}
+        <p style="color: var(--primary); font-weight: 500;">Admin Ayrıcalığı: Bu işlem sizin için ücretsizdir.</p>
+        {% else %}
+        <p style="color: var(--text-muted);">Bu işlem <strong style="color: var(--primary);">50 puan</strong>
+            harcayacaktır. (Mevcut Puanınız: {{ points }})</p>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Anket Başlığı</label>
+            <input type="text" id="title" name="title" required placeholder="İlginç bir başlık girin...">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Açıklama</label>
+            <textarea id="description" name="description" rows="4"
+                placeholder="Anketin amacını açıklayın..."></textarea>
+        </div>
+
+        <div class="toggle-group">
+            <label class="switch">
+                <input type="checkbox" name="requires_login" checked>
+                <span class="slider"></span>
+            </label>
+            <div>
+                <div style="font-weight: 600; font-size: 1.1rem; color: var(--text-color);">Kullanıcı Girişi Zorunlu
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Sadece hesap sahibi AnCat kullanıcıları bu
+                    ankete katılabilir. Kapatırsanız e-posta olmadan herkes erişebilir.</div>
+            </div>
+        </div>
+
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <a href="{% url 'survey_list' %}"
+                style="color: var(--text-muted); text-decoration: none; font-weight: 500;">İptal Et</a>
+            {% if is_admin %}
+            <button type="submit" class="btn btn-primary"
+                style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 12px;">
+                Oluştur (Admin)
+            </button>
+            {% elif points < 50 %} <button type="button" class="btn btn-primary"
+                style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 12px; pointer-events: none; opacity: 0.5;"
+                disabled>
+                Yetersiz Puan 🔒
+                </button>
+                {% else %}
+                <button type="submit" class="btn btn-primary"
+                    style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 12px;">
+                    Oluştur (50 Puan)
+                </button>
+                {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

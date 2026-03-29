@@ -1,0 +1,69 @@
+{% extends 'surveys/base.html' %}
+
+{% block title %}Sonuçlar: {{ survey.title }} - AnCat{% endblock %}
+
+{% block content %}
+<div class="animate-fade" style="max-width: 800px; margin: 0 auto;">
+    <div
+        style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 400;">Anket <span
+                    style="color: var(--primary); font-weight: 500;">Sonuçları</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">{{ survey.title }}</p>
+        </div>
+        <a href="{% url 'survey_list' %}" class="btn btn-secondary">Diğer Anketleri Keşfet</a>
+    </div>
+
+    {% for res in results %}
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 500;">
+            <span>{{ forloop.counter }}.</span> <span>{{ res.question.text }}</span>
+        </h3>
+
+        {% if res.question.type == 'text' %}
+        <div style="max-height: 300px; overflow-y: auto; padding-right: 0.5rem;">
+            {% for answer in res.answers %}
+            <div
+                style="background: var(--bg-main); padding: 1rem; border-radius: 4px; margin-bottom: 0.8rem; border: 1px solid var(--border);">
+                {{ answer.text_answer }}
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    <span>{{ answer.created_at|date:"d M Y" }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted);">Henüz yanıt yok.</p>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        {% for choice in res.choices %}
+        <div class="choice-result" style="margin-bottom: 1.2rem;">
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-weight: 400; font-size: 0.95rem;">
+                <span>{{ choice.text }}</span>
+                <span style="color: var(--primary); font-weight: 500;">{{ choice.num_answers }} oy</span>
+            </div>
+            <div class="result-bar-container">
+                {% if survey.total_responses > 0 %}
+                <div class="result-bar" data-width="{% widthratio choice.num_answers survey.total_responses 100 %}%">
+                </div>
+                {% else %}
+                <div class="result-bar" data-width="0%"></div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p style="color: var(--text-muted);">Bu soru için seçenek tanımlanmamış.</p>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.result-bar[data-width]').forEach(el => {
+            el.style.width = el.getAttribute('data-width');
+        });
+    });
+</script>
+{% endblock %}

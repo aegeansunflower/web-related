@@ -1,0 +1,61 @@
+{% extends 'surveys/base.html' %}
+{% block title %}My Profile - AnCat{% endblock %}
+{% block content %}
+<div class="profile-container" style="animation: fadeIn 0.5s ease-out; max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Welcome, {{ user.username }}!</h2>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Here are the surveys you have interacted with.</p>
+        </div>
+        <div
+            style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 1.5rem 2rem; border-radius: 20px; text-align: center; box-shadow: var(--shadow-sm);">
+            <div
+                style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; margin-bottom: 0.5rem;">
+                Total Points</div>
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">⭐ {{ user.profile.points }}</div>
+        </div>
+    </div>
+
+    {% if surveys_taken %}
+    <div class="survey-list">
+        {% for survey, answers in surveys_taken.items %}
+        <div class="survey-card"
+            style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow-sm); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+            <h3>{{ survey.title }}</h3>
+            <p style="color: var(--text-color); opacity: 0.8; margin-top: 0.5rem;">{{ survey.description }}</p>
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: 1rem;">Your Answers:</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+                {% for answer in answers %}
+                <li
+                    style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-color); border-radius: calc(var(--radius) / 2);">
+                    <strong style="display: block; margin-bottom: 0.3rem;">{{ answer.question.text }}</strong>
+                    {% if answer.choice %}
+                    <span style="color: var(--primary-color); font-weight: 500;">&bull; {{ answer.choice.text }}</span>
+                    {% elif answer.text_answer %}
+                    <span style="color: var(--primary-color); font-weight: 500;">&bull; {{ answer.text_answer }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <div style="margin-top: 1.5rem;">
+                <a href="{% url 'survey_results' survey.id %}" class="btn btn-secondary">View All Results</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"
+        style="text-align: center; padding: 4rem 2rem; background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="var(--border-color)" style="margin-bottom: 1rem;">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+            <path d="M7 12h2v5H7zm4-3h2v8h-2zm4-3h2v11h-2z" />
+        </svg>
+        <h3 style="margin-bottom: 0.5rem;">No surveys yet</h3>
+        <p style="color: var(--text-color); opacity: 0.8; margin-bottom: 1.5rem;">You haven't taken any surveys yet.
+            Start exploring and share your opinions!</p>
+        <a href="{% url 'survey_list' %}" class="btn btn-primary">Browse Surveys</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
